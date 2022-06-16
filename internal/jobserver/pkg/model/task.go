@@ -9,7 +9,7 @@ type Task struct {
 	Command string `json:"command" binding:"required" gorm:"column:command"`
 	Status  int    `json:"status" binding:"required" gorm:"column:status"`   // 0 已创建未开始, 1 成功, -1 失败
 	Cron    bool   `json:"cron" binding:"required" gorm:"column:cron"`       // true定时 false立即执行
-	Runtime uint64 `json:"runtime" binding:"required" gorm:"column:runtime"` // 定时为时间戳, 立即执行为0
+	Runtime int64  `json:"runtime" binding:"required" gorm:"column:runtime"` // 定时为时间戳, 立即执行为0
 }
 
 func (t *Task) TableName() string {
