@@ -16,6 +16,6 @@ job项目是一个中心化任务分发执行服务，基于CS架构
 
 ## 架构
 
-![image-20220616140106895](.\images\readme-1.png)
+![image-20220616140106895](images/readme-1.png)
 
 ## 使用方法
