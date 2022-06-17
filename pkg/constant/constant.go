@@ -1,0 +1,7 @@
+package constant
+
+const (
+	TASKSTATUSPENDING = 0
+	TASKSTATUSSUCCESS = 1
+	TASKSTATUSFAILED  = -1
+)
