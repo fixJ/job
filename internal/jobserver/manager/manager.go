@@ -8,19 +8,19 @@ import (
 )
 
 var (
-	m    *Manager
+	m    *ServerManager
 	once sync.Once
 )
 
-type Manager struct {
+type ServerManager struct {
 	liveNodes []core.NodeInfo
 	deadTTL   time.Duration
 	l         sync.Mutex
 }
 
-func GetManagerOr() (*Manager, error) {
+func GetManagerOr() (*ServerManager, error) {
 	once.Do(func() {
-		m = &Manager{
+		m = &ServerManager{
 			deadTTL: 5 * time.Second,
 		}
 	})
@@ -31,7 +31,7 @@ func GetManagerOr() (*Manager, error) {
 }
 
 // 更新存活节点列表
-func (m *Manager) UpdateLiveNode(ip string) {
+func (m *ServerManager) UpdateLiveNode(ip string) {
 	for _, node := range m.liveNodes {
 		// 已经存在在列表中，则更新时间戳
 		if node.IP == ip {
@@ -51,7 +51,7 @@ func (m *Manager) UpdateLiveNode(ip string) {
 }
 
 // 定期移除长时间没报存活的节点
-func (m *Manager) RemoveDeadNode() {
+func (m *ServerManager) RemoveDeadNode() {
 	ticker := time.NewTicker(1 * time.Second)
 	for range ticker.C {
 		for i, node := range m.liveNodes {
@@ -64,7 +64,7 @@ func (m *Manager) RemoveDeadNode() {
 	}
 }
 
-func (m *Manager) IsLive(target string) bool {
+func (m *ServerManager) IsLive(target string) bool {
 	for _, n := range m.liveNodes {
 		if target == n.IP {
 			return true
