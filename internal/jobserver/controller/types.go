@@ -1,8 +1,9 @@
 package controller
 
 type CommonResp struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
+	Code    int         `json:"code"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data,omitempty"`
 }
 
 type CreateReq struct {
@@ -11,4 +12,17 @@ type CreateReq struct {
 	Command string `json:"command"`
 	Cron    bool   `json:"cron"`
 	Runtime int64  `json:"runtime"`
+}
+
+type UpdateReq struct {
+	ID     int64 `json:"id"`
+	Status int   `json:"status"`
+}
+
+type ListReq struct {
+	Target string `json:"target"`
+}
+
+type LiveReq struct {
+	Target string `json:"target"`
 }

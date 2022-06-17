@@ -13,9 +13,9 @@ func NewTaskStore(db *gorm.DB) *TaskStore {
 	return &TaskStore{db: db}
 }
 
-func (t TaskStore) Get(target, tid string) (*model.Task, error) {
+func (t TaskStore) Get(tid int64) (*model.Task, error) {
 	r := &model.Task{}
-	err := t.db.Where("target = ? and task_id = ?", target, tid).First(&r).Error
+	err := t.db.Where("id = ?", tid).First(&r).Error
 	if err != nil {
 		return nil, err
 	}

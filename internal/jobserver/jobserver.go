@@ -3,6 +3,7 @@ package jobserver
 import (
 	"github.com/spf13/cobra"
 	"job/internal/jobserver/controller"
+	"job/internal/jobserver/manager"
 	"job/internal/jobserver/server"
 	"job/internal/jobserver/service"
 	"job/internal/jobserver/store/mysql"
@@ -52,13 +53,19 @@ func run() error {
 	}
 	s := c.New()
 	db, err := mysql.GetMySQLInsOr(dbHost+":"+dbPort, dbUsername, dbPassword, dbName)
+	m, err := manager.GetManagerOr()
 	if err != nil {
 		return err
 	}
 	store := mysql.NewStore(db)
 	svc := service.NewService(store)
 	tc := controller.NewTaskController(svc)
+	cc := controller.NewCoreController()
 	s.Register("/api/task/create", tc.Create)
+	s.Register("/api/task/update", tc.Update)
+	s.Register("/api/task/list", tc.List)
+	s.Register("/api/core/live", cc.LiveProbe)
+	go m.RemoveDeadNode()
 	s.Start()
 	return nil
 }

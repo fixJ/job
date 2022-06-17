@@ -1,9 +1,15 @@
 package manager
 
 import (
+	"fmt"
 	"job/internal/jobserver/pkg/core"
 	"sync"
 	"time"
+)
+
+var (
+	m    *Manager
+	once sync.Once
 )
 
 type Manager struct {
@@ -12,11 +18,23 @@ type Manager struct {
 	l         sync.Mutex
 }
 
+func GetManagerOr() (*Manager, error) {
+	once.Do(func() {
+		m = &Manager{
+			deadTTL: 5 * time.Second,
+		}
+	})
+	if m == nil {
+		return nil, fmt.Errorf("manager is nil")
+	}
+	return m, nil
+}
+
 // 更新存活节点列表
-func (m *Manager) UpdateLiveNode(ip, hostname string) {
+func (m *Manager) UpdateLiveNode(ip string) {
 	for _, node := range m.liveNodes {
 		// 已经存在在列表中，则更新时间戳
-		if node.IP == ip && node.Hostname == hostname {
+		if node.IP == ip {
 			m.l.Lock()
 			node.LastProbe = time.Now().Unix()
 			m.l.Unlock()
@@ -26,7 +44,6 @@ func (m *Manager) UpdateLiveNode(ip, hostname string) {
 	m.l.Lock()
 	m.liveNodes = append(m.liveNodes, core.NodeInfo{
 		IP:        ip,
-		Hostname:  hostname,
 		CreatedAt: time.Now().Unix(),
 		LastProbe: time.Now().Unix(),
 	})
@@ -45,4 +62,13 @@ func (m *Manager) RemoveDeadNode() {
 			}
 		}
 	}
+}
+
+func (m *Manager) IsLive(target string) bool {
+	for _, n := range m.liveNodes {
+		if target == n.IP {
+			return true
+		}
+	}
+	return false
 }
