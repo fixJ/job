@@ -22,13 +22,8 @@ var (
 
 func NewJobServerCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   appName,
-		Short: "A good Go practical project",
-		Long: `A good Go practical project, used to create user with basic information.
-Find more goserver information at:
-    https://github.com/marmotedu/goserver/blob/master/docs/master/goserver.md`,
-
-		// stop printing usage when the command errors
+		Use:          appName,
+		Short:        "jobserver",
 		SilenceUsage: true,
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		},

@@ -1,6 +1,9 @@
 package joblet
 
-import "github.com/spf13/cobra"
+import (
+	"github.com/spf13/cobra"
+	"job/internal/joblet/manager"
+)
 
 var (
 	appName = "joblet"
@@ -9,13 +12,8 @@ var (
 
 func NewJobletCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   appName,
-		Short: "A good Go practical project",
-		Long: `A good Go practical project, used to create user with basic information.
-Find more goserver information at:
-    https://github.com/marmotedu/goserver/blob/master/docs/master/goserver.md`,
-
-		// stop printing usage when the command errors
+		Use:          appName,
+		Short:        "joblet",
 		SilenceUsage: true,
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		},
@@ -30,5 +28,10 @@ Find more goserver information at:
 // 定时上报存活
 // 定时List task, 运行任务
 func run() error {
+	m, err := manager.NewLetManager()
+	if err != nil {
+		return err
+	}
+	go m.Live(server)
 	return nil
 }
