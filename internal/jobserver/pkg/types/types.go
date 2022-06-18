@@ -1,4 +1,10 @@
-package controller
+package types
+
+type NodeInfo struct {
+	IP        string
+	CreatedAt int64
+	LastProbe int64
+}
 
 type CommonResp struct {
 	Code    int         `json:"code"`

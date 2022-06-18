@@ -7,6 +7,7 @@ import (
 	"job/internal/jobserver/server"
 	"job/internal/jobserver/service"
 	"job/internal/jobserver/store/mysql"
+	"job/pkg/constant"
 )
 
 var (
@@ -31,13 +32,13 @@ func NewJobServerCommand() *cobra.Command {
 			return run()
 		},
 	}
-	cmd.Flags().StringVarP(&serverHost, "serverHost", "", "127.0.0.1", "serverHost=127.0.0.1")
-	cmd.Flags().StringVarP(&serverPort, "serverPort", "", "8080", "serverPort=8080")
-	cmd.Flags().StringVarP(&dbHost, "dbHost", "", "127.0.0.1", "dbHost=127.0.0.1")
-	cmd.Flags().StringVarP(&dbPort, "dbPort", "", "3306", "dbPort=3306")
-	cmd.Flags().StringVarP(&dbUsername, "dbUsername", "", "root", "dbUsername=root")
-	cmd.Flags().StringVarP(&dbPassword, "dbPassword", "", "root", "dbPassword=root")
-	cmd.Flags().StringVarP(&dbName, "dbName", "", "job", "dbName=job")
+	cmd.Flags().StringVarP(&serverHost, "serverHost", "", "127.0.0.1", "--serverHost=127.0.0.1")
+	cmd.Flags().StringVarP(&serverPort, "serverPort", "", "8080", "--serverPort=8080")
+	cmd.Flags().StringVarP(&dbHost, "dbHost", "", "127.0.0.1", "--dbHost=127.0.0.1")
+	cmd.Flags().StringVarP(&dbPort, "dbPort", "", "3306", "--dbPort=3306")
+	cmd.Flags().StringVarP(&dbUsername, "dbUsername", "", "root", "--dbUsername=root")
+	cmd.Flags().StringVarP(&dbPassword, "dbPassword", "", "root", "--dbPassword=root")
+	cmd.Flags().StringVarP(&dbName, "dbName", "", "job", "--dbName=job")
 	return cmd
 }
 
@@ -56,10 +57,10 @@ func run() error {
 	svc := service.NewService(store)
 	tc := controller.NewTaskController(svc)
 	cc := controller.NewCoreController()
-	s.Register("/api/task/create", tc.Create)
-	s.Register("/api/task/update", tc.Update)
-	s.Register("/api/task/list", tc.List)
-	s.Register("/api/core/live", cc.LiveProbe)
+	s.Register(constant.TASKCREATEURI, tc.Create)
+	s.Register(constant.TASKUPDATEURI, tc.Update)
+	s.Register(constant.TASKLISTURI, tc.List)
+	s.Register(constant.LIVEURI, cc.LiveProbe)
 	go m.RemoveDeadNode()
 	s.Start()
 	return nil

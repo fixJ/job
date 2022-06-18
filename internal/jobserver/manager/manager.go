@@ -2,7 +2,7 @@ package manager
 
 import (
 	"fmt"
-	"job/internal/jobserver/pkg/core"
+	"job/internal/jobserver/pkg/types"
 	"sync"
 	"time"
 )
@@ -13,7 +13,7 @@ var (
 )
 
 type ServerManager struct {
-	liveNodes []core.NodeInfo
+	liveNodes []types.NodeInfo
 	deadTTL   time.Duration
 	l         sync.Mutex
 }
@@ -42,7 +42,7 @@ func (m *ServerManager) UpdateLiveNode(ip string) {
 	}
 	// 不存在列表中，可能是第一次上报，也可能之前被移除了再次上报
 	m.l.Lock()
-	m.liveNodes = append(m.liveNodes, core.NodeInfo{
+	m.liveNodes = append(m.liveNodes, types.NodeInfo{
 		IP:        ip,
 		CreatedAt: time.Now().Unix(),
 		LastProbe: time.Now().Unix(),

@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"job/internal/jobserver/manager"
+	"job/internal/jobserver/pkg/types"
 	"net/http"
 )
 
@@ -16,11 +17,11 @@ func NewCoreController() *CoreController {
 // 节点注册
 func (c *CoreController) LiveProbe(w http.ResponseWriter, req *http.Request) {
 	body := make([]byte, req.ContentLength)
-	var lr LiveReq
+	var lr types.LiveReq
 	req.Body.Read(body)
 	err := json.Unmarshal(body, &lr)
 	if err != nil {
-		resp, _ := json.Marshal(CommonResp{
+		resp, _ := json.Marshal(types.CommonResp{
 			Code:    -1,
 			Message: "request error",
 		})
@@ -29,7 +30,7 @@ func (c *CoreController) LiveProbe(w http.ResponseWriter, req *http.Request) {
 	}
 	m, err := manager.GetManagerOr()
 	if err != nil {
-		resp, _ := json.Marshal(CommonResp{
+		resp, _ := json.Marshal(types.CommonResp{
 			Code:    -1,
 			Message: "get manager failed",
 		})
@@ -37,7 +38,7 @@ func (c *CoreController) LiveProbe(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	m.UpdateLiveNode(lr.Target)
-	resp, _ := json.Marshal(CommonResp{
+	resp, _ := json.Marshal(types.CommonResp{
 		Code:    0,
 		Message: "ok",
 	})

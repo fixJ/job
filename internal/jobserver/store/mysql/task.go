@@ -28,7 +28,7 @@ func (t *TaskStore) Create(task *model.Task) error {
 
 func (t *TaskStore) List(target string) (*[]model.Task, error) {
 	ret := &[]model.Task{}
-	err := t.db.Where("target = ?", target).Find(&ret).Error
+	err := t.db.Where("target = ? and status = 0", target).Find(&ret).Error
 	if err != nil {
 		return nil, err
 	}
