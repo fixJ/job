@@ -3,6 +3,9 @@ package joblet
 import (
 	"github.com/spf13/cobra"
 	"job/internal/joblet/manager"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 var (
@@ -28,10 +31,13 @@ func NewJobletCommand() *cobra.Command {
 // 定时上报存活
 // 定时List task, 运行任务
 func run() error {
+	done := make(chan os.Signal)
 	m, err := manager.NewLetManager()
 	if err != nil {
 		return err
 	}
 	go m.Live(server)
+	signal.Notify(done, syscall.SIGINT, syscall.SIGTERM)
+	<-done
 	return nil
 }
