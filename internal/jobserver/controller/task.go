@@ -56,7 +56,7 @@ func (t *TaskController) Create(w http.ResponseWriter, req *http.Request) {
 		Command: cr.Command,
 		Cron:    cr.Cron,
 		Runtime: cr.Runtime,
-		Status:  constant.TASKSTATUSSUCCESS,
+		Status:  constant.TASKSTATUSPENDING,
 	}
 	err = t.svc.Task().Create(&task)
 	if err != nil {

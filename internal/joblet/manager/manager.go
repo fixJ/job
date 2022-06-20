@@ -51,6 +51,11 @@ func (m *LetManager) ListTasksAndRun() {
 		_ = json.Unmarshal(resp, &listObj)
 		tasks := listObj.Data
 		for _, task := range tasks {
+			if task.Cron {
+				if task.Runtime > time.Now().Unix() {
+					continue
+				}
+			}
 			if !m.IsRunning(task) {
 				m.l.Lock()
 				m.RunningTask = append(m.RunningTask, task)
@@ -58,12 +63,17 @@ func (m *LetManager) ListTasksAndRun() {
 				go func(task types.TaskInfo) {
 					err := m.runCommand(task.Command)
 					if err != nil {
+						d, _ := json.Marshal(types.UpdateReq{
+							ID:     task.ID,
+							Status: constant.TASKSTATUSFAILED,
+						})
+						_, err = client.DoPost(utils.URL(m.Server, constant.TASKUPDATEURI), d)
 						m.removeFromRunning(task)
 						return
 					}
 					d, _ := json.Marshal(types.UpdateReq{
 						ID:     task.ID,
-						Status: 1,
+						Status: constant.TASKSTATUSSUCCESS,
 					})
 					_, err = client.DoPost(utils.URL(m.Server, constant.TASKUPDATEURI), d)
 					m.removeFromRunning(task)
@@ -80,6 +90,7 @@ func (m *LetManager) runCommand(cmd string) error {
 	in.WriteString(cmd)
 	err := c.Run()
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 	return nil
